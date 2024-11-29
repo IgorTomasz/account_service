@@ -14,6 +14,7 @@ namespace account_service
 			// Add services to the container.
 
 			builder.Services.AddControllers();
+			
 			builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();

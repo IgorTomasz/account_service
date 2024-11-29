@@ -1,5 +1,6 @@
 using account_service.context;
 using account_service.models;
+using account_service.models.DTOs;
 using account_service.services;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,22 @@ namespace account_service.Controllers
         
         private readonly IUserService _userService;
         private readonly ILogger<UserController> _logger;
-        private readonly UserDatabaseContext _context;
 
-        public UserController(ILogger<UserController> logger, UserDatabaseContext context)
+        public UserController(ILogger<UserController> logger, IUserService userService)
         {
+            _userService = userService;
             _logger = logger;
-            _context = context;
+        }
+
+        [HttpPost("/auth/login")]
+        public async Task<IActionResult> login(loginDTO loginDTO)
+        {
+            Guid userId = await _userService.CheckIfUserExists(loginDTO.username);
+            if (userId == Guid.Empty) {
+                return BadRequest("This user doesn't exists");
+            }
+
+            return Ok("Correct user");
         }
 
         [HttpGet]
