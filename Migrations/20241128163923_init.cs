@@ -25,7 +25,7 @@ namespace account_service.Migrations
                     isVerified = table.Column<bool>(type: "bit", nullable: false),
                     isActive = table.Column<bool>(type: "bit", nullable: false),
                     createdAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    lastLogin = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    lastLogin = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

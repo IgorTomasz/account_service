@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace account_service.models
 {
-	public class User
+	public class UserDTO
 	{
-		[Key]
-		public Guid userId { get; set; }
 		[Required]
 		public string username { get; set; }
 		[Required]
@@ -25,10 +22,5 @@ namespace account_service.models
 		public Boolean isActive { get; set; }
 		[Required]
 		public DateTime createdAt { get; set; }
-		[AllowNull]
-		public DateTime? lastLogin {  get; set; }
-		public virtual ICollection<UserSession> sessions { get; set; }
-
-	
 	}
 }

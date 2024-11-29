@@ -12,8 +12,8 @@ using account_service.context;
 namespace account_service.Migrations
 {
     [DbContext(typeof(UserDatabaseContext))]
-    [Migration("20241128005526_init")]
-    partial class init
+    [Migration("20241128172549_changed_volume")]
+    partial class changed_volume
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,7 +47,7 @@ namespace account_service.Migrations
                     b.Property<bool>("isVerified")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("lastLogin")
+                    b.Property<DateTime?>("lastLogin")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("lastname")

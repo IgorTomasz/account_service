@@ -1,5 +1,8 @@
 ﻿using account_service.models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+
 
 namespace account_service.context
 {
@@ -12,7 +15,7 @@ namespace account_service.context
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-
+			
 			base.OnModelCreating(modelBuilder);
 		}
 	}
