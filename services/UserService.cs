@@ -12,10 +12,11 @@ namespace account_service.services
 	{
 		public Task<Guid> CheckIfUserExists(string username);
 		public Task<List<User>> GetAllUsers();
-		public Task CreateUser(RegisterRequest userDTO);
+		public Task<User> CreateUser(RegisterRequest userDTO);
 		public Task<bool> CheckPasswordMatchUser(Guid userId, string password);
 		public Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email);
 		public Task<User> GetUserProfile(Guid userId);
+		public Guid ParseGuid(string guidString);
 
 	}
 
@@ -78,11 +79,11 @@ namespace account_service.services
 			return list;
 		} 
 
-		public async Task CreateUser(RegisterRequest userDTO)
+		public async Task<User> CreateUser(RegisterRequest userDTO)
 		{
 			var g = Guid.NewGuid();
 
-			var id = await _context.Users.AddAsync(new User
+			User user = new User
 			{
 				UserId = g,
 				Name = userDTO.Name,
@@ -94,9 +95,29 @@ namespace account_service.services
 				PasswordHash = userDTO.PasswordHash,
 				DateOfBirth = userDTO.DateOfBirth,
 				LastLogin = null
-			});
+			};
+
+			var id = await _context.Users.AddAsync(user);
 
 			await _context.SaveChangesAsync();
+
+			return user;
 		}
-    }
+
+		public Guid ParseGuid(string guidString)
+		{
+			Guid userId = Guid.Empty;
+
+			try
+			{
+				userId = Guid.Parse(guidString);
+			}
+			catch (FormatException e)
+			{
+
+			}
+
+			return userId;
+		}
+	}
 }

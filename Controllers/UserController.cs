@@ -63,15 +63,15 @@ namespace account_service.Controllers
                 return Conflict("User to young.");
             }
 
-			await _userService.CreateUser(userDTO);
+			User user = await _userService.CreateUser(userDTO);
 
-            return Created();
+            return Created("",user);
         }
 
         [HttpGet("profile/{userIdString}")]
         public async Task<IActionResult> GetUserProfile(string userIdString)
         {
-			Guid userId = ParseGuid(userIdString);
+			Guid userId = _userService.ParseGuid(userIdString);
 
             if (userId == Guid.Empty)
             {
@@ -98,20 +98,7 @@ namespace account_service.Controllers
             });
         }
 
-		public Guid ParseGuid(string guidString)
-		{
-			Guid userId = Guid.Empty;
 
-			try
-			{
-				userId = Guid.Parse(guidString);
-			}
-			catch (FormatException e)
-			{
-
-			}
-
-			return userId;
-		}
+		
 	}
 }

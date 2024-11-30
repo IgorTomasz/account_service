@@ -1,4 +1,5 @@
-﻿using account_service.models.UserSessionDTOs;
+﻿using account_service.models;
+using account_service.models.UserSessionDTOs;
 using account_service.services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,73 @@ namespace account_service.Controllers
 			_logger = logger;
 		}
 
+		[HttpGet("auth/session/all")]
+		public async Task<IActionResult> GetAllSessions()
+		{
+			return Ok(await _userSessionService.GetAllSessions());
+		}
+
+		[HttpPatch("auth/session/logout/{sessionIdString}")]
+		public async Task<IActionResult> LogoutSession(string sessionIdString)
+		{
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
+			if (sessionId == Guid.Empty)
+			{
+				return BadRequest("Wrong session guid");
+			}
+
+			await _userSessionService.Logout(sessionId);
+
+			return Ok();
+		}
+
+		[HttpGet("auth/session/{sessionIdString}")]
+		public async Task<IActionResult> GetSession(string sessionIdString)
+		{
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
+
+			if (sessionId == Guid.Empty)
+			{
+				return BadRequest("Wrong session guid");
+			}
+
+			UserSession userSession = await _userSessionService.GetSession(sessionId);
+
+			if (userSession == null)
+			{
+				return NotFound("Session was not found");
+			}
+
+			return Ok(new
+			{
+				SessionId = userSession.SessionId,
+				UserId = userSession.UserId,
+				Status = userSession.Status,
+				Reftoken = userSession.Reftoken,
+				StartTime = userSession.StartTime,
+				EndTime = userSession.EndTime,
+				DeviceInfo = userSession.DeviceInfo,
+				IpAddress = userSession.IpAddress
+			});
+		}
+
+		[HttpPatch("auth/update-session/{sessionIdString}")]
+		public async Task<IActionResult> UpdateSession(string sessionIdString)
+		{
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
+
+			if (sessionId == Guid.Empty)
+			{
+				return BadRequest("Wrong session guid");
+			}
+
+			await _userSessionService.UpdateSession(sessionId);
+
+			return Ok($"Session {sessionId} updated");
+		}
+
+
+
 		[HttpPost("auth/create-session")]
 		public async Task<IActionResult> CreateSession(CreateSessionRequest createSessionRequest)
 		{
@@ -28,7 +96,7 @@ namespace account_service.Controllers
 		[HttpGet("auth/refresh-token/{sessionIdString}")]
 		public async Task<IActionResult> GetRefreshToken(string sessionIdString)
 		{
-			Guid sessionId = ParseGuid(sessionIdString);
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
 
 			if (sessionId == Guid.Empty)
 			{
@@ -48,7 +116,7 @@ namespace account_service.Controllers
 		[HttpGet("profile/userInfo/{sessionIdString}")]
 		public async Task<IActionResult> GetUserIdFromSession(string sessionIdString)
 		{
-			Guid sessionId =  ParseGuid(sessionIdString);
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
 
 			if(sessionId == Guid.Empty)
 			{
@@ -64,20 +132,6 @@ namespace account_service.Controllers
 			return BadRequest("Something went wrong retreving userId from sessionId");
 		}
 
-		public Guid ParseGuid(string guidString)
-		{
-			Guid sessionId = Guid.Empty;
-
-			try
-			{
-				sessionId = Guid.Parse(guidString);
-			}
-			catch (FormatException e)
-			{
-				
-			}
-
-			return sessionId;
-		}
+		
 	}
 }
