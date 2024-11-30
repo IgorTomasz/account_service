@@ -1,7 +1,7 @@
 ﻿using account_service.context;
 using account_service.models;
 using account_service.models.DTOs;
-
+using account_service.models.UserDTOs;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -17,6 +17,8 @@ namespace account_service.services
 		public Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email);
 		public Task<User> GetUserProfile(Guid userId);
 		public Guid ParseGuid(string guidString);
+		public Task<bool> CheckIfUserExists(Guid userId);
+		public Task<bool> ChangePassword(ChangePasswordRequest passwordRequest);
 
 	}
 
@@ -32,32 +34,29 @@ namespace account_service.services
 		public async Task<User> GetUserProfile(Guid userId)
 		{
 			var user = await _context.Users.Where(e => e.UserId == userId).FirstOrDefaultAsync();
-			if (user != null)
-			{
-				return user;
-			}
-			return new User();
+
+			return user != null ? user : new User();
 		}
 
 		public async Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email)
 		{
 			var user = await _context.Users.Where(e => e.Username == username || e.Email == email).FirstOrDefaultAsync();
 
-			if (user == null)
-			{
-				return false;
-			}
-			return true;
+			return user != null;
 		}
 
 		public async Task<Guid> CheckIfUserExists(string username)
 		{
 			var user = await _context.Users.Where(e => e.Username == username || e.Email == username).FirstOrDefaultAsync();
-			if (user != null)
-			{
-				return user.UserId;
-			}
-			return Guid.Empty;
+
+			return user != null ? user.UserId : Guid.Empty;
+		}
+
+		public async Task<bool> CheckIfUserExists(Guid userId)
+		{
+			var user = await _context.Users.FindAsync(userId);
+		
+			return user!=null;
 		}
 
 		public async Task<bool> CheckPasswordMatchUser(Guid userId, string password)
@@ -66,11 +65,7 @@ namespace account_service.services
 
 			var user = await _context.Users.Where(e => e.UserId == userId && e.PasswordHash == password).FirstOrDefaultAsync();
 
-			if (user != null)
-			{
-				return true;
-			}
-			return false;
+			return user != null;
 		}
 
 		public async Task<List<User>> GetAllUsers()
@@ -102,6 +97,18 @@ namespace account_service.services
 			await _context.SaveChangesAsync();
 
 			return user;
+		}
+
+		public async Task<bool> ChangePassword(ChangePasswordRequest passwordRequest)
+		{
+			var user = await _context.Users.FindAsync(passwordRequest.userId);
+
+			user.PasswordHash = passwordRequest.newPassword;
+
+			var res = await _context.SaveChangesAsync();
+
+			return res >= 1;
+
 		}
 
 		public Guid ParseGuid(string guidString)

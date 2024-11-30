@@ -1,6 +1,7 @@
 using account_service.context;
 using account_service.models;
 using account_service.models.DTOs;
+using account_service.models.UserDTOs;
 using account_service.services;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,43 @@ namespace account_service.Controllers
             _logger = logger;
         }
 
-        [HttpPost("auth/login")]
+		[HttpGet("adm/users")]
+		public async Task<IActionResult> Get()
+		{
+			return Ok(await _userService.GetAllUsers());
+		}
+
+		[HttpGet("profile/{userIdString}")]
+		public async Task<IActionResult> GetUserProfile(string userIdString)
+		{
+			Guid userId = _userService.ParseGuid(userIdString);
+
+			if (userId == Guid.Empty)
+			{
+				return BadRequest("Wrong user guid");
+			}
+
+			User user = await _userService.GetUserProfile(userId);
+			if (user.Username == string.Empty)
+			{
+				return Conflict("Something went wrong retreving user profile from userId");
+			}
+
+			return Ok(new
+			{
+				UserId = user.UserId,
+				Username = user.Username,
+				Name = user.Name,
+				Lastname = user.Lastname,
+				Email = user.Email,
+				DateOfBirth = user.DateOfBirth,
+				IsActive = user.IsActive,
+				CreatedAt = user.CreatedAt,
+				LastLogin = user.LastLogin
+			});
+		}
+
+		[HttpPost("auth/login")]
         public async Task<IActionResult> Login(LoginRequest loginDTO)
         {
             Guid userId = await _userService.CheckIfUserExists(loginDTO.Username);
@@ -42,11 +79,25 @@ namespace account_service.Controllers
             return Conflict();
         }
 
-        [HttpGet("adm/users")]
-        public async Task<IActionResult> Get()
-        {
-            return Ok(await _userService.GetAllUsers());
-        }
+		[HttpPatch("profile/update-password")]
+		public async Task<IActionResult> UpdatePassword(ChangePasswordRequest passwordRequest)
+		{
+			bool isExisting = await _userService.CheckIfUserExists(passwordRequest.userId);
+
+			if (!isExisting)
+			{
+				return NotFound("User does not exist");
+			}
+
+			bool passwordUpdated = await _userService.ChangePassword(passwordRequest);
+
+			if (passwordUpdated)
+			{
+				return Ok("Password changed");
+			}
+
+			return Conflict("Something went wrong while saving the new password");
+		}
 
         [HttpPost("auth/register")]
         public async Task<IActionResult> Create(RegisterRequest userDTO)
@@ -68,35 +119,7 @@ namespace account_service.Controllers
             return Created("",user);
         }
 
-        [HttpGet("profile/{userIdString}")]
-        public async Task<IActionResult> GetUserProfile(string userIdString)
-        {
-			Guid userId = _userService.ParseGuid(userIdString);
-
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("Wrong user guid");
-            }
-            
-            User user = await _userService.GetUserProfile(userId);
-            if (user.Username == string.Empty)
-            {
-                return Conflict("Something went wrong retreving user profile from userId");
-            }
-
-            return Ok(new
-            {
-                UserId = user.UserId,
-                Username = user.Username,
-                Name = user.Name,
-                Lastname = user.Lastname,
-                Email = user.Email,
-                DateOfBirth = user.DateOfBirth,
-                IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt,
-                LastLogin = user.LastLogin
-            });
-        }
+        
 
 
 		

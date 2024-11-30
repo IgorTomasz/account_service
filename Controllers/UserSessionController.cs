@@ -24,20 +24,6 @@ namespace account_service.Controllers
 			return Ok(await _userSessionService.GetAllSessions());
 		}
 
-		[HttpPatch("auth/session/logout/{sessionIdString}")]
-		public async Task<IActionResult> LogoutSession(string sessionIdString)
-		{
-			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
-			if (sessionId == Guid.Empty)
-			{
-				return BadRequest("Wrong session guid");
-			}
-
-			await _userSessionService.Logout(sessionId);
-
-			return Ok();
-		}
-
 		[HttpGet("auth/session/{sessionIdString}")]
 		public async Task<IActionResult> GetSession(string sessionIdString)
 		{
@@ -68,31 +54,6 @@ namespace account_service.Controllers
 			});
 		}
 
-		[HttpPatch("auth/update-session/{sessionIdString}")]
-		public async Task<IActionResult> UpdateSession(string sessionIdString)
-		{
-			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
-
-			if (sessionId == Guid.Empty)
-			{
-				return BadRequest("Wrong session guid");
-			}
-
-			await _userSessionService.UpdateSession(sessionId);
-
-			return Ok($"Session {sessionId} updated");
-		}
-
-
-
-		[HttpPost("auth/create-session")]
-		public async Task<IActionResult> CreateSession(CreateSessionRequest createSessionRequest)
-		{
-			Guid userSessionId = await _userSessionService.CreateUserSession(createSessionRequest);
-
-			return Created($"/auth/session/{userSessionId}",userSessionId);
-		}
-
 		[HttpGet("auth/refresh-token/{sessionIdString}")]
 		public async Task<IActionResult> GetRefreshToken(string sessionIdString)
 		{
@@ -118,7 +79,7 @@ namespace account_service.Controllers
 		{
 			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
 
-			if(sessionId == Guid.Empty)
+			if (sessionId == Guid.Empty)
 			{
 				return BadRequest("Wrong session guid");
 			}
@@ -131,6 +92,49 @@ namespace account_service.Controllers
 			}
 			return BadRequest("Something went wrong retreving userId from sessionId");
 		}
+
+		[HttpPatch("auth/session/logout/{sessionIdString}")]
+		public async Task<IActionResult> LogoutSession(string sessionIdString)
+		{
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
+			if (sessionId == Guid.Empty)
+			{
+				return BadRequest("Wrong session guid");
+			}
+
+			await _userSessionService.Logout(sessionId);
+
+			return Ok();
+		}
+
+		
+
+		[HttpPatch("auth/session/update/{sessionIdString}")]
+		public async Task<IActionResult> UpdateSession(string sessionIdString)
+		{
+			Guid sessionId = _userSessionService.ParseGuid(sessionIdString);
+
+			if (sessionId == Guid.Empty)
+			{
+				return BadRequest("Wrong session guid");
+			}
+
+			await _userSessionService.UpdateSession(sessionId);
+
+			return Ok($"Session {sessionId} updated");
+		}
+
+
+
+		[HttpPost("auth/session/create")]
+		public async Task<IActionResult> CreateSession(CreateSessionRequest createSessionRequest)
+		{
+			Guid userSessionId = await _userSessionService.CreateUserSession(createSessionRequest);
+
+			return Created($"/auth/session/{userSessionId}",userSessionId);
+		}
+
+		
 
 		
 	}

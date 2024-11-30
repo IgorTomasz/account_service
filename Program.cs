@@ -32,9 +32,15 @@ namespace account_service
 			}
 
 			/**
+             * Authorization with gateway api by ip filtering
+             */
+			app.UseMiddleware<IpFilteringMiddleware>();
+
+			/**
              * Authorization with gateway api by secret key
              */
-			//app.UseMiddleware<GatewayAuthentication>();
+			app.UseMiddleware<GatewayAuthenticationMiddleware>();
+			
 
 			app.UseHttpsRedirection();
 
