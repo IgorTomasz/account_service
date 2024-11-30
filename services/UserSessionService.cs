@@ -1,6 +1,7 @@
 ﻿using account_service.context;
 using account_service.models;
 using account_service.models.UserSessionDTOs;
+using account_service.repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace account_service.services
@@ -18,97 +19,46 @@ namespace account_service.services
 	}
 	public class UserSessionService : IUserSessionService
 	{
-		private readonly UserDatabaseContext _context;
+		private readonly IUserSessionRepository _userSessionRepository;
 
-		public UserSessionService(UserDatabaseContext context)
+		public UserSessionService(IUserSessionRepository userSessionRepository)
 		{
-			_context = context;
+			_userSessionRepository = userSessionRepository;
 		}
 
 		public async Task<UserSession> GetSession(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.FindAsync(sessionId);
-
-			if (userSession == null)
-			{
-				return new UserSession();
-			}
-
-			return userSession;
+			return await _userSessionRepository.GetSession(sessionId);
 		}
 
 		public async Task<Guid> CreateUserSession(CreateSessionRequest createSessionRequest)
 		{
-			Guid userSessionId = Guid.NewGuid();
-			User user = await _context.Users.FindAsync(createSessionRequest.UserId);
-
-			var res = await _context.UserSessions.AddAsync(new UserSession
-			{
-				SessionId = userSessionId,
-				UserId = createSessionRequest.UserId,
-				Status = UserSessionStatus.Active,
-				Reftoken = createSessionRequest.RefToken,
-				StartTime = DateTime.UtcNow.AddHours(1),
-				EndTime = DateTime.UtcNow.AddMinutes(15).AddHours(1),
-				DeviceInfo = createSessionRequest.DeviceInfo,
-				IpAddress = createSessionRequest.IdAddress,
-				User = user
-			});
-
-			await _context.SaveChangesAsync();
-
-			if (res != null)
-			{
-				return userSessionId;
-			}
-			
-			return Guid.Empty;
+			return await _userSessionRepository.CreateUserSession(createSessionRequest);
 		}
 
 		public async Task Logout(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e=> e.SessionId== sessionId).FirstOrDefaultAsync();
-
-			userSession.Status = UserSessionStatus.LoggedOut;
-			await _context.SaveChangesAsync();
+			await _userSessionRepository.Logout(sessionId);
 		}
 
 		public async Task UpdateSession(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e=> e.SessionId == sessionId).FirstOrDefaultAsync();
-			if (userSession != null)
-			{
-				userSession.EndTime = DateTime.UtcNow.AddMinutes(15);
-			}
+			await _userSessionRepository.UpdateSession(sessionId);
 		}
 
 		public async Task<string> GetUserRefToken(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e=> e.SessionId == sessionId).FirstOrDefaultAsync();
-
-			if (userSession != null)
-			{
-				return userSession.Reftoken;
-			}
-
-			return null;
+			return await _userSessionRepository.GetUserRefToken(sessionId);
 		}
 
 		public async Task<Guid> GetUserIdFromSessionId(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId).FirstOrDefaultAsync();
-
-			if (userSession != null)
-			{
-				return userSession.UserId;
-			}
-
-			return Guid.Empty;
+			return await _userSessionRepository.GetUserIdFromSessionId(sessionId);
 		}
 
 		public async Task<List<UserSession>> GetAllSessions()
 		{
-			return await _context.UserSessions.ToListAsync();
+			return await _userSessionRepository.GetAllSessions();
 		}
 
 		public Guid ParseGuid(string guidString)

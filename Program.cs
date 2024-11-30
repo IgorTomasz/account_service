@@ -1,6 +1,7 @@
 ﻿
 using account_service.context;
 using account_service.middleware;
+using account_service.repositories;
 using account_service.services;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,8 @@ namespace account_service
 
 			builder.Services.AddControllers();
 			builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+			builder.Services.AddScoped<IUserRepository, UserRepository>();
+			builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
 			builder.Services.AddScoped<IUserService, UserService>();
 			builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -34,12 +37,12 @@ namespace account_service
 			/**
              * Authorization with gateway api by ip filtering
              */
-			app.UseMiddleware<IpFilteringMiddleware>();
+			//app.UseMiddleware<IpFilteringMiddleware>();
 
 			/**
              * Authorization with gateway api by secret key
              */
-			app.UseMiddleware<GatewayAuthenticationMiddleware>();
+			//app.UseMiddleware<GatewayAuthenticationMiddleware>();
 			
 
 			app.UseHttpsRedirection();

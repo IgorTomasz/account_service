@@ -2,9 +2,8 @@
 using account_service.models;
 using account_service.models.DTOs;
 using account_service.models.UserDTOs;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using account_service.repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace account_service.services
 {
@@ -24,90 +23,51 @@ namespace account_service.services
 
 	public class UserService : IUserService
 	{
-		private readonly UserDatabaseContext _context;
+		private readonly IUserRepository _userRepository;
 
-		public UserService(UserDatabaseContext context)
+		public UserService(IUserRepository userRepository)
 		{
-			_context = context;
+			_userRepository = userRepository;
 		}
 
 		public async Task<User> GetUserProfile(Guid userId)
 		{
-			var user = await _context.Users.Where(e => e.UserId == userId).FirstOrDefaultAsync();
-
-			return user != null ? user : new User();
+			return await _userRepository.GetUserProfile(userId);
 		}
 
 		public async Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email)
 		{
-			var user = await _context.Users.Where(e => e.Username == username || e.Email == email).FirstOrDefaultAsync();
-
-			return user != null;
+			return await _userRepository.CheckIfAlreadyExistsByUsernameAndEmail(username, email);
 		}
 
 		public async Task<Guid> CheckIfUserExists(string username)
 		{
-			var user = await _context.Users.Where(e => e.Username == username || e.Email == username).FirstOrDefaultAsync();
-
-			return user != null ? user.UserId : Guid.Empty;
+			return await _userRepository.CheckIfUserExists(username);
 		}
 
 		public async Task<bool> CheckIfUserExists(Guid userId)
 		{
-			var user = await _context.Users.FindAsync(userId);
-		
-			return user!=null;
+			return await _userRepository.CheckIfUserExists(userId); ;
 		}
 
 		public async Task<bool> CheckPasswordMatchUser(Guid userId, string password)
 		{
-
-
-			var user = await _context.Users.Where(e => e.UserId == userId && e.PasswordHash == password).FirstOrDefaultAsync();
-
-			return user != null;
+			return await _userRepository.CheckPasswordMatchUser(userId, password);
 		}
 
 		public async Task<List<User>> GetAllUsers()
 		{
-			var list = await _context.Users.ToListAsync();
-			return list;
+			return await _userRepository.GetAllUsers();
 		} 
 
 		public async Task<User> CreateUser(RegisterRequest userDTO)
 		{
-			var g = Guid.NewGuid();
-
-			User user = new User
-			{
-				UserId = g,
-				Name = userDTO.Name,
-				Lastname = userDTO.Lastname,
-				Email = userDTO.Email,
-				Username = userDTO.Username,
-				IsActive = true,
-				CreatedAt = DateTime.Now,
-				PasswordHash = userDTO.PasswordHash,
-				DateOfBirth = userDTO.DateOfBirth,
-				LastLogin = null
-			};
-
-			var id = await _context.Users.AddAsync(user);
-
-			await _context.SaveChangesAsync();
-
-			return user;
+			return await _userRepository.CreateUser(userDTO);
 		}
 
 		public async Task<bool> ChangePassword(ChangePasswordRequest passwordRequest)
 		{
-			var user = await _context.Users.FindAsync(passwordRequest.userId);
-
-			user.PasswordHash = passwordRequest.newPassword;
-
-			var res = await _context.SaveChangesAsync();
-
-			return res >= 1;
+			return await _userRepository.ChangePassword(passwordRequest);
 
 		}
 
