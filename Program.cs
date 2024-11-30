@@ -1,6 +1,7 @@
 ﻿
 using account_service.context;
 using account_service.middleware;
+using account_service.services;
 using Microsoft.EntityFrameworkCore;
 
 namespace account_service
@@ -14,8 +15,9 @@ namespace account_service
 			// Add services to the container.
 
 			builder.Services.AddControllers();
-			
 			builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+			builder.Services.AddScoped<IUserService, UserService>();
+
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();

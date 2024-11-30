@@ -24,7 +24,7 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver:/var/opt/mssql
+      - sqlserver:/var/opt/account_service_sqlserver
     networks:
       - produktnetwork
 networks:
