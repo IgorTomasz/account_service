@@ -6,20 +6,20 @@ namespace account_service.models
 	public class UserSession
 	{
 		[Key]
-		public Guid sessionId {  get; set; }
+		public Guid SessionId {  get; set; }
 		[Required]
-		public Guid userId { get; set; }
+		public Guid UserId { get; set; }
 		[Required]
-		public UserSessionStatus status { get; set; }
+		public UserSessionStatus Status { get; set; }
 		[Required]
-		public string token { get; set; }
+		public string Reftoken { get; set; } = string.Empty;
 		[Required]
-		public DateTime startTime { get; set; }
+		public DateTime StartTime { get; set; }
 		[Required]
-		public DateTime endTime { get; set; }
-		public string deviceInfo { get; set; }
-		public string idAddress { get; set; }
-		[ForeignKey(nameof(userId))]
+		public DateTime EndTime { get; set; }
+		public string DeviceInfo { get; set; } = string.Empty;
+		public string IpAddress { get; set; } = string.Empty;
+		[ForeignKey(nameof(UserId))]
 		public virtual User User { get; set; }
 	}
 

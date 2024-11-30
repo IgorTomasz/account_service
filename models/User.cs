@@ -6,27 +6,25 @@ namespace account_service.models
 	public class User
 	{
 		[Key]
-		public Guid userId { get; set; }
+		public Guid UserId { get; set; }
 		[Required]
-		public string username { get; set; }
+		public string Username { get; set; } = string.Empty;
 		[Required]
-		public string name { get; set; }
+		public string Name { get; set; } = string.Empty;
 		[Required]
-		public string lastname { get; set; }
+		public string Lastname { get; set; } = string.Empty;
 		[Required]
-		public string passwordHash { get; set; }
+		public string PasswordHash { get; set; } = string.Empty;
 		[Required]
-		public string email { get; set; }
+		public string Email { get; set; } = string.Empty;
 		[Required]
-		public DateOnly dateOfBirth { get; set; }
+		public DateOnly DateOfBirth { get; set; }
 		[Required]
-		public Boolean isVerified { get; set; }
+		public Boolean IsActive { get; set; }
 		[Required]
-		public Boolean isActive { get; set; }
-		[Required]
-		public DateTime createdAt { get; set; }
+		public DateTime CreatedAt { get; set; }
 		[AllowNull]
-		public DateTime? lastLogin {  get; set; }
+		public DateTime? LastLogin {  get; set; }
 		public virtual ICollection<UserSession> sessions { get; set; }
 
 	

@@ -11,8 +11,11 @@ namespace account_service.services
 	public interface IUserService
 	{
 		public Task<Guid> CheckIfUserExists(string username);
-		public Task<List<User>> getAllUsers();
-		public Task createUser(UserDTO userDTO);
+		public Task<List<User>> GetAllUsers();
+		public Task CreateUser(RegisterRequest userDTO);
+		public Task<bool> CheckPasswordMatchUser(Guid userId, string password);
+		public Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email);
+		public Task<User> GetUserProfile(Guid userId);
 
 	}
 
@@ -25,41 +28,72 @@ namespace account_service.services
 			_context = context;
 		}
 
-		public async Task<Guid> CheckIfUserExists(string username)
+		public async Task<User> GetUserProfile(Guid userId)
 		{
-			var user = await _context.Users.Where(e => e.username == username || e.email == username).FirstOrDefaultAsync();
+			var user = await _context.Users.Where(e => e.UserId == userId).FirstOrDefaultAsync();
 			if (user != null)
 			{
-				return user.userId;
+				return user;
+			}
+			return new User();
+		}
+
+		public async Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email)
+		{
+			var user = await _context.Users.Where(e => e.Username == username || e.Email == email).FirstOrDefaultAsync();
+
+			if (user == null)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public async Task<Guid> CheckIfUserExists(string username)
+		{
+			var user = await _context.Users.Where(e => e.Username == username || e.Email == username).FirstOrDefaultAsync();
+			if (user != null)
+			{
+				return user.UserId;
 			}
 			return Guid.Empty;
 		}
 
-		public async Task<List<User>> getAllUsers()
+		public async Task<bool> CheckPasswordMatchUser(Guid userId, string password)
+		{
+
+
+			var user = await _context.Users.Where(e => e.UserId == userId && e.PasswordHash == password).FirstOrDefaultAsync();
+
+			if (user != null)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public async Task<List<User>> GetAllUsers()
 		{
 			var list = await _context.Users.ToListAsync();
 			return list;
 		} 
 
-		public async Task createUser(UserDTO userDTO)
+		public async Task CreateUser(RegisterRequest userDTO)
 		{
-			byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
-			var hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(password: userDTO.passwordHash, salt: salt, prf: KeyDerivationPrf.HMACSHA256, iterationCount: 1000, numBytesRequested: 256 / 8));
 			var g = Guid.NewGuid();
 
 			var id = await _context.Users.AddAsync(new User
 			{
-				userId = g,
-				name = userDTO.name,
-				lastname = userDTO.lastname,
-				email = userDTO.email,
-				username = userDTO.username,
-				isActive = userDTO.isActive,
-				isVerified = userDTO.isVerified,
-				createdAt = DateTime.Now,
-				passwordHash = hashed,
-				dateOfBirth = userDTO.dateOfBirth,
-				lastLogin = null
+				UserId = g,
+				Name = userDTO.Name,
+				Lastname = userDTO.Lastname,
+				Email = userDTO.Email,
+				Username = userDTO.Username,
+				IsActive = true,
+				CreatedAt = DateTime.Now,
+				PasswordHash = userDTO.PasswordHash,
+				DateOfBirth = userDTO.DateOfBirth,
+				LastLogin = null
 			});
 
 			await _context.SaveChangesAsync();

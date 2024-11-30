@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using account_service.context;
 
@@ -11,9 +12,11 @@ using account_service.context;
 namespace account_service.Migrations
 {
     [DbContext(typeof(UserDatabaseContext))]
-    partial class UserDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241130173514_removed_is_verified_and_changed_names")]
+    partial class removed_is_verified_and_changed_names
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,9 +44,6 @@ namespace account_service.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Lastname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -60,6 +60,9 @@ namespace account_service.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("lastLogin")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
@@ -67,37 +70,37 @@ namespace account_service.Migrations
 
             modelBuilder.Entity("account_service.models.UserSession", b =>
                 {
-                    b.Property<Guid>("SessionId")
+                    b.Property<Guid>("sessionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("DeviceInfo")
+                    b.Property<string>("deviceInfo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EndTime")
+                    b.Property<DateTime>("endTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("IpAddress")
+                    b.Property<string>("idAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Reftoken")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartTime")
+                    b.Property<DateTime>("startTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<string>("token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("userId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("SessionId");
+                    b.HasKey("sessionId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("userId");
 
                     b.ToTable("UserSessions");
                 });
@@ -106,7 +109,7 @@ namespace account_service.Migrations
                 {
                     b.HasOne("account_service.models.User", "User")
                         .WithMany("sessions")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

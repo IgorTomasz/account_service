@@ -17,7 +17,7 @@ namespace account_service
 			builder.Services.AddControllers();
 			builder.Services.AddDbContext<UserDatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 			builder.Services.AddScoped<IUserService, UserService>();
-
+			builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
