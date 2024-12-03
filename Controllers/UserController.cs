@@ -59,17 +59,31 @@ namespace account_service.Controllers
             Guid userId = await _userService.CheckIfUserExists(loginDTO.Username);
 
             if (userId == Guid.Empty) {
-                return BadRequest("This user doesn't exists");
+                return BadRequest(new LoginResponse
+				{
+					Success = false,
+					Error = "This user doesn't exists",
+					UserId = Guid.Empty
+				});
             }
 
             bool isMatching = await _userService.CheckPasswordMatchUser(userId, loginDTO.Password);
 
             if (isMatching)
             {
-				return Ok("Correct credentials");
+				return Ok(new LoginResponse
+				{
+					Success = true,
+					UserId = userId,
+				});
 			}
 
-            return Conflict();
+            return Conflict(new LoginResponse
+			{
+				Success = false,
+				Error = "Wrong credentials",
+				UserId= Guid.Empty
+			});
         }
 
 		[HttpPatch("profile/update-password")]
