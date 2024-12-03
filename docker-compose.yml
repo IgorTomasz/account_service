@@ -11,12 +11,12 @@ services:
       - "8080:8080"
       - "8081:8081" 
     depends_on:
-      - sqlserv
+      - sqlserv_account
     networks:
       - produktnetwork
     restart: on-failure
 
-  sqlserv:
+  sqlserv_account:
     image: mcr.microsoft.com/mssql/server:latest
     environment:
         MSSQL_SA_PASSWORD: "Pa$$word123!@#"
@@ -24,11 +24,11 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver:/var/opt/account_service_sqlserver
+      - sqlserver_account:/var/opt/account_service_sqlserver
     networks:
       - produktnetwork
 networks:
   produktnetwork:    
 
 volumes:
-  sqlserver:    
+  sqlserver_account:    

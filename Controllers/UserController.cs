@@ -30,16 +30,9 @@ namespace account_service.Controllers
 			return Ok(await _userService.GetAllUsers());
 		}
 
-		[HttpGet("profile/{userIdString}")]
-		public async Task<IActionResult> GetUserProfile(string userIdString)
+		[HttpGet("profile/{userId}")]
+		public async Task<IActionResult> GetUserProfile(Guid userId)
 		{
-			Guid userId = _userService.ParseGuid(userIdString);
-
-			if (userId == Guid.Empty)
-			{
-				return BadRequest("Wrong user guid");
-			}
-
 			User user = await _userService.GetUserProfile(userId);
 			if (user.Username == string.Empty)
 			{
@@ -119,8 +112,13 @@ namespace account_service.Controllers
             return Created("",user);
         }
 
-        
 
+		[HttpDelete("adm/delete")]
+		public async Task<IActionResult> DeleteUser(Guid userId)
+		{
+			await _userService.DeleteUser(userId);
+			return Ok($"User {userId} was deleted");
+		}
 
 		
 	}

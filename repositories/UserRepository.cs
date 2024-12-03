@@ -18,6 +18,7 @@ namespace account_service.repositories
 		public Guid ParseGuid(string guidString);
 		public Task<bool> CheckIfUserExists(Guid userId);
 		public Task<bool> ChangePassword(ChangePasswordRequest passwordRequest);
+		public Task DeleteUser(Guid userId);
 	}
 
 	public class UserRepository : IUserRepository
@@ -107,6 +108,13 @@ namespace account_service.repositories
 
 			return res >= 1;
 
+		}
+
+		public async Task DeleteUser(Guid userId)
+		{
+			var user = await _context.Users.FindAsync(userId);
+			_context.Users.Remove(user);
+			await _context.SaveChangesAsync();
 		}
 
 		public Guid ParseGuid(string guidString)
