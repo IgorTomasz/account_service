@@ -25,8 +25,15 @@ namespace account_service.models
 		public DateTime CreatedAt { get; set; }
 		[AllowNull]
 		public DateTime? LastLogin {  get; set; }
+		[Required]
+		public UserType UserType { get; set; }
 		public virtual ICollection<UserSession> sessions { get; set; }
 
 	
+	}
+
+	public enum UserType
+	{
+		Client, Admin
 	}
 }

@@ -16,5 +16,6 @@ namespace account_service.models.DTOs
         public string Email { get; set; } = string.Empty;
 		[Required]
         public DateOnly DateOfBirth { get; set; }
+
     }
 }

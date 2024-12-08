@@ -88,7 +88,8 @@ namespace account_service.repositories
 				CreatedAt = DateTime.Now,
 				PasswordHash = userDTO.PasswordHash,
 				DateOfBirth = userDTO.DateOfBirth,
-				LastLogin = null
+				LastLogin = null,
+				UserType = UserType.Client
 			};
 
 			var id = await _context.Users.AddAsync(user);

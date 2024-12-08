@@ -68,9 +68,17 @@ namespace account_service.Controllers
 
 			if (userId != Guid.Empty)
 			{
-				return Ok(userId);
+				return Ok(new
+				{
+					Success = true,
+					UserId = userId
+				});
 			}
-			return BadRequest("Something went wrong retreving userId from sessionId");
+			return BadRequest(new
+			{
+				Success = false,
+				UserId = Guid.Empty
+			});
 		}
 
 		[HttpPatch("auth/session/logout/{sessionId}")]
