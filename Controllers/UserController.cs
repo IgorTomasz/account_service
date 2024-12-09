@@ -93,17 +93,28 @@ namespace account_service.Controllers
 
 			if (!isExisting)
 			{
-				return NotFound("User does not exist");
+				return NotFound(new HttpResponseModel
+				{
+					Success = false,
+					Error = "User does not exist"
+				});
 			}
 
 			bool passwordUpdated = await _userService.ChangePassword(passwordRequest);
 
 			if (passwordUpdated)
 			{
-				return Ok("Password changed");
+				return Ok(new HttpResponseModel
+				{
+					Success = true
+				});
 			}
 
-			return Conflict("Something went wrong while saving the new password");
+			return Conflict(new HttpResponseModel
+			{
+				Success = false,
+				Error = "Something went wrong while saving the new password"
+			});
 		}
 
         [HttpPost("auth/register")]

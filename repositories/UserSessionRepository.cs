@@ -2,13 +2,14 @@
 using account_service.models;
 using Microsoft.EntityFrameworkCore;
 using account_service.context;
+using account_service.models.UserDTOs;
 
 namespace account_service.repositories
 {
 	public interface IUserSessionRepository
 	{
 		public Task<Guid> CreateUserSession(CreateSessionRequest createSessionRequest);
-		public Task<string> GetUserRefToken(Guid sessionId);
+		public Task<string> GetUserRefToken(RefreshTokenRequest request);
 		public Task<Guid> GetUserIdFromSessionId(Guid sessionId);
 		public Task UpdateSession(Guid sessionId);
 		public Task<UserSession> GetSession(Guid sessionId);
@@ -71,6 +72,7 @@ namespace account_service.repositories
 			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId).FirstOrDefaultAsync();
 
 			userSession.Status = UserSessionStatus.LoggedOut;
+			userSession.EndTime = DateTime.UtcNow.AddHours(1);
 			await _context.SaveChangesAsync();
 		}
 
@@ -83,9 +85,9 @@ namespace account_service.repositories
 			}
 		}
 
-		public async Task<string> GetUserRefToken(Guid sessionId)
+		public async Task<string> GetUserRefToken(RefreshTokenRequest request)
 		{
-			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId).FirstOrDefaultAsync();
+			var userSession = await _context.UserSessions.Where(e => e.SessionId == request.SessionId && e.UserId==request.UserId).FirstOrDefaultAsync();
 
 			if (userSession != null)
 			{

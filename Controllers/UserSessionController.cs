@@ -1,4 +1,5 @@
 ﻿using account_service.models;
+using account_service.models.UserDTOs;
 using account_service.models.UserSessionDTOs;
 using account_service.services;
 using Microsoft.AspNetCore.Mvc;
@@ -48,17 +49,25 @@ namespace account_service.Controllers
 			});
 		}
 
-		[HttpGet("auth/refresh-token/{sessionId}")]
-		public async Task<IActionResult> GetRefreshToken(Guid sessionId)
+		[HttpPost("auth/refresh-token")]
+		public async Task<IActionResult> GetRefreshToken(RefreshTokenRequest refreshRequest)
 		{
-			string refToken = await _userSessionService.GetUserRefToken(sessionId);
+			string refToken = await _userSessionService.GetUserRefToken(refreshRequest);
 
 			if (refToken == null)
 			{
-				return NotFound($"There is no RefToken for sessionId: {sessionId}");
+				return NotFound(new HttpResponseModel
+				{
+					Success = false,
+					Error = $"There is no RefToken for sessionId: {refreshRequest.SessionId}"
+				});
 			}
 
-			return Ok(refToken);
+			return Created("",new HttpResponseModel
+			{
+				Success = true,
+				Message = refToken
+			});
 		}
 
 		[HttpGet("profile/userInfo/{sessionId}")]

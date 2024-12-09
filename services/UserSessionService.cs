@@ -1,5 +1,6 @@
 ﻿using account_service.context;
 using account_service.models;
+using account_service.models.UserDTOs;
 using account_service.models.UserSessionDTOs;
 using account_service.repositories;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace account_service.services
 	public interface IUserSessionService
 	{
 		public Task<Guid> CreateUserSession(CreateSessionRequest createSessionRequest);
-		public Task<string> GetUserRefToken(Guid sessionId);
+		public Task<string> GetUserRefToken(RefreshTokenRequest request);
 		public Task<Guid> GetUserIdFromSessionId(Guid sessionId);
 		public Task UpdateSession(Guid sessionId);
 		public Task<UserSession> GetSession(Guid sessionId);
@@ -45,9 +46,9 @@ namespace account_service.services
 			await _userSessionRepository.UpdateSession(sessionId);
 		}
 
-		public async Task<string> GetUserRefToken(Guid sessionId)
+		public async Task<string> GetUserRefToken(RefreshTokenRequest request)
 		{
-			return await _userSessionRepository.GetUserRefToken(sessionId);
+			return await _userSessionRepository.GetUserRefToken(request);
 		}
 
 		public async Task<Guid> GetUserIdFromSessionId(Guid sessionId)
