@@ -16,12 +16,10 @@ namespace account_service.Controllers
     {
         
         private readonly IUserService _userService;
-        private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _logger = logger;
         }
 
 		[HttpGet("adm/users")]
@@ -134,7 +132,11 @@ namespace account_service.Controllers
 
 			User user = await _userService.CreateUser(userDTO);
 
-            return Created("",user);
+            return Created("",new HttpResponseModel
+			{
+				Success = true,
+				Message = user.UserId
+			});
         }
 
 
