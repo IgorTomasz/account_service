@@ -20,7 +20,7 @@ namespace account_service.models
 		[Required]
 		public DateOnly DateOfBirth { get; set; }
 		[Required]
-		public Boolean IsActive { get; set; }
+		public bool IsActive { get; set; }
 		[Required]
 		public DateTime CreatedAt { get; set; }
 		[AllowNull]

@@ -80,13 +80,13 @@ namespace account_service.Controllers
 				return Ok(new
 				{
 					Success = true,
-					UserId = userId
+					Message = userId
 				});
 			}
 			return BadRequest(new
 			{
 				Success = false,
-				UserId = Guid.Empty
+                Message = Guid.Empty
 			});
 		}
 
