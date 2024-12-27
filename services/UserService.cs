@@ -18,8 +18,10 @@ namespace account_service.services
 		public Task<bool> CheckIfUserExists(Guid userId);
 		public Task<bool> ChangePassword(ChangePasswordRequest passwordRequest);
 		public Task DeleteUser(Guid userId);
+		public Task UpdateLastLogin(Guid userId);
 
-	}
+
+    }
 
 	public class UserService : IUserService
 	{
@@ -60,7 +62,13 @@ namespace account_service.services
 			return await _userRepository.CheckPasswordMatchUser(userId, password);
 		}
 
-		public async Task<List<User>> GetAllUsers()
+        public async Task UpdateLastLogin(Guid userId)
+		{
+			await _userRepository.UpdateLastLogin(userId);
+		}
+
+
+        public async Task<List<User>> GetAllUsers()
 		{
 			return await _userRepository.GetAllUsers();
 		} 

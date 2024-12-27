@@ -19,7 +19,9 @@ namespace account_service.repositories
 		public Task<bool> CheckIfUserExists(Guid userId);
 		public Task<bool> ChangePassword(ChangePasswordRequest passwordRequest);
 		public Task DeleteUser(Guid userId);
-	}
+		public Task UpdateLastLogin(Guid userId);
+
+    }
 
 	public class UserRepository : IUserRepository
 	{
@@ -66,6 +68,14 @@ namespace account_service.repositories
 
 			return user != null;
 		}
+
+		public async Task UpdateLastLogin(Guid userId)
+		{
+            var user = await _context.Users.Where(e => e.UserId == userId).FirstOrDefaultAsync();
+
+			user.LastLogin = DateTime.Now.AddHours(1);
+			await _context.SaveChangesAsync();
+        }
 
 		public async Task<List<User>> GetAllUsers()
 		{

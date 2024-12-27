@@ -76,6 +76,7 @@ namespace account_service.Controllers
 
             if (isMatching)
             {
+				await _userService.UpdateLastLogin(userId);
 				return Ok(new LoginResponse
 				{
 					Success = true,
@@ -129,18 +130,26 @@ namespace account_service.Controllers
 
             if (isExistingAlready)
             {
-				return Conflict("User with that username/email already exists.");
+				return Conflict(new HttpResponseModel
+				{
+					Success = false,
+					Error = "User with that username/email already exists."
+                });
 			}
 
             if (DateOnly.FromDateTime(DateTime.Now).AddYears(-18) < userDTO.DateOfBirth)
             {
-                return Conflict("User to young.");
+                return Conflict(new HttpResponseModel
+				{
+					Success = false,
+					Error = "User to young."
+                });
             }
 
 			User user = await _userService.CreateUser(userDTO);
 
             return Created("",new HttpResponseModel
-			{
+			{ 
 				Success = true,
 				Message = user.UserId
 			});
