@@ -37,6 +37,23 @@ namespace account_service.Controllers
 				return Conflict("Something went wrong retreving user profile from userId");
 			}
 
+			return Ok(new UserProfileResponse
+			{
+				Success = true,
+				User = new UserResponse
+				{
+					UserId = user.UserId,
+					Username = user.Username,
+					Name = user.Name,
+					Lastname = user.Lastname,
+					Email = user.Email,
+					DateOfBirth = user.DateOfBirth,
+					IsActive = user.IsActive,
+					CreatedAt = user.CreatedAt,
+					LastLogin = user.LastLogin
+				}
+			});
+		}
 			return Ok(new
 			{
 				Success = true,

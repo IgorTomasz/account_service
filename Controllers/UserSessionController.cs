@@ -77,16 +77,16 @@ namespace account_service.Controllers
 
 			if (userId != Guid.Empty)
 			{
-				return Ok(new
+				return Ok(new HttpResponseModel
 				{
 					Success = true,
 					Message = userId
 				});
 			}
-			return BadRequest(new
+			return BadRequest(new HttpResponseModel
 			{
 				Success = false,
-                Message = Guid.Empty
+				Message = Guid.Empty
 			});
 		}
 
