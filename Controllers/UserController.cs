@@ -54,26 +54,7 @@ namespace account_service.Controllers
 				}
 			});
 		}
-			return Ok(new
-			{
-				Success = true,
-				Error = "",
-				User = new
-				{
-					UserId = user.UserId,
-					Username = user.Username,
-					Name = user.Name,
-					LastName = user.Lastname,
-					Email = user.Email,
-					DateOfBirth = user.DateOfBirth,
-					IsActive = user.IsActive,
-					CreatedAt = user.CreatedAt,
-					LastLogin	= user.LastLogin,
-					UserType = user.UserType,
-				}
-            }
-				);
-		}
+		
 
 		[HttpPost("auth/login")]
         public async Task<IActionResult> Login(LoginRequest loginDTO)
