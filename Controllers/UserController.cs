@@ -34,7 +34,7 @@ namespace account_service.Controllers
 			User user = await _userService.GetUserProfile(userId);
 			if (user.Username == string.Empty)
 			{
-				return Conflict("Something went wrong retreving user profile from userId");
+				return Ok("Something went wrong retreving user profile from userId");
 			}
 
 			return Ok(new UserProfileResponse
@@ -62,7 +62,7 @@ namespace account_service.Controllers
             Guid userId = await _userService.CheckIfUserExists(loginDTO.Username);
 
             if (userId == Guid.Empty) {
-                return BadRequest(new LoginResponse
+                return Ok(new LoginResponse
 				{
 					Success = false,
 					Error = "This user doesn't exists",
@@ -82,7 +82,7 @@ namespace account_service.Controllers
 				});
 			}
 
-            return Conflict(new LoginResponse
+            return Ok(new LoginResponse
 			{
 				Success = false,
 				Error = "Wrong credentials",
@@ -97,12 +97,13 @@ namespace account_service.Controllers
 
 			if (!isExisting)
 			{
-				return NotFound(new HttpResponseModel
+				return Ok(new HttpResponseModel
 				{
 					Success = false,
 					Error = "User does not exist"
 				});
 			}
+
 
 			bool passwordUpdated = await _userService.ChangePassword(passwordRequest);
 
@@ -114,7 +115,7 @@ namespace account_service.Controllers
 				});
 			}
 
-			return Conflict(new HttpResponseModel
+			return Ok(new HttpResponseModel
 			{
 				Success = false,
 				Error = "Something went wrong while saving the new password"
@@ -128,7 +129,7 @@ namespace account_service.Controllers
 
             if (isExistingAlready)
             {
-				return Conflict(new HttpResponseModel
+				return Ok(new HttpResponseModel
 				{
 					Success = false,
 					Error = "User with that username/email already exists."
@@ -137,7 +138,7 @@ namespace account_service.Controllers
 
             if (DateOnly.FromDateTime(DateTime.Now).AddYears(-18) < userDTO.DateOfBirth)
             {
-                return Conflict(new HttpResponseModel
+                return Ok(new HttpResponseModel
 				{
 					Success = false,
 					Error = "User to young."
@@ -146,7 +147,7 @@ namespace account_service.Controllers
 
 			User user = await _userService.CreateUser(userDTO);
 
-            return Created("",new HttpResponseModel
+            return Ok("",new HttpResponseModel
 			{ 
 				Success = true,
 				Message = user.UserId
