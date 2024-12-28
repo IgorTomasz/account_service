@@ -113,6 +113,11 @@ namespace account_service.repositories
 		{
 			var user = await _context.Users.FindAsync(passwordRequest.userId);
 
+			if (passwordRequest.newPassword == user.PasswordHash)
+			{
+				return false;
+			}
+
 			user.PasswordHash = passwordRequest.newPassword;
 
 			var res = await _context.SaveChangesAsync();
