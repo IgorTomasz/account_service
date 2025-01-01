@@ -147,7 +147,7 @@ namespace account_service.Controllers
 
 			User user = await _userService.CreateUser(userDTO);
 
-            return Ok("",new HttpResponseModel
+            return Created("",new HttpResponseModel
 			{ 
 				Success = true,
 				Message = user.UserId
