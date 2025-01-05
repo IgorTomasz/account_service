@@ -113,6 +113,8 @@ namespace account_service.Controllers
 		[HttpPost("auth/session/create")]
 		public async Task<IActionResult> CreateSession(CreateSessionRequest createSessionRequest)
 		{
+			await _userSessionService.ExpireUserOldSessions(createSessionRequest.UserId);
+
 			Guid userSessionId = await _userSessionService.CreateUserSession(createSessionRequest);
 
 			return Created($"/auth/session/{userSessionId}",userSessionId);

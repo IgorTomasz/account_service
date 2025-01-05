@@ -16,6 +16,7 @@ namespace account_service.repositories
 		public Guid ParseGuid(string guidString);
 		public Task<List<UserSession>> GetAllSessions();
 		public Task Logout(Guid sessionId);
+		public Task ExpireUserOldSessions(Guid userId);
 	}
 
 	public class UserSessionRepository : IUserSessionRepository
@@ -37,6 +38,18 @@ namespace account_service.repositories
 			}
 
 			return userSession;
+		}
+
+		public async Task ExpireUserOldSessions(Guid userId)
+		{
+			var sessions = await _context.UserSessions.Where(e => e.UserId == userId).ToListAsync();
+
+			foreach (var session in sessions) {
+				session.Status = UserSessionStatus.Expired;
+			}
+
+			await _context.SaveChangesAsync();
+
 		}
 
 		public async Task<Guid> CreateUserSession(CreateSessionRequest createSessionRequest)
