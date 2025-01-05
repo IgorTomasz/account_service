@@ -100,12 +100,16 @@ namespace account_service.Controllers
 
 		
 
-		[HttpPatch("auth/session/update/{sessionId}")]
-		public async Task<IActionResult> UpdateSession(Guid sessionId)
+		[HttpPatch("auth/session/update")]
+		public async Task<IActionResult> UpdateSession(UpdateSessionWithRefToken request)
 		{
-			await _userSessionService.UpdateSession(sessionId);
+			await _userSessionService.UpdateSession(request.SessionId, request.RefToken);
 
-			return Ok($"Session {sessionId} updated");
+			return Ok(new HttpResponseModel
+			{
+				Success = true,
+				Message = request.SessionId
+			});
 		}
 
 

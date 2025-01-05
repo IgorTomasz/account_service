@@ -17,6 +17,7 @@ namespace account_service.services
 		public Task<List<UserSession>> GetAllSessions();
 		public Task Logout(Guid sessionId);
 		public Task ExpireUserOldSessions(Guid userId);
+		public Task UpdateSession(Guid sessionId, string refToken);
 	}
 	public class UserSessionService : IUserSessionService
 	{
@@ -30,6 +31,11 @@ namespace account_service.services
 		public async Task<UserSession> GetSession(Guid sessionId)
 		{
 			return await _userSessionRepository.GetSession(sessionId);
+		}
+
+		public async Task UpdateSession(Guid sessionId, string refToken)
+		{
+			await _userSessionRepository.UpdateSession(sessionId, refToken);
 		}
 
 		public async Task<Guid> CreateUserSession(CreateSessionRequest createSessionRequest)

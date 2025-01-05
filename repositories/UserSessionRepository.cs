@@ -17,6 +17,7 @@ namespace account_service.repositories
 		public Task<List<UserSession>> GetAllSessions();
 		public Task Logout(Guid sessionId);
 		public Task ExpireUserOldSessions(Guid userId);
+		public Task UpdateSession(Guid sessionId, string refToken);
 	}
 
 	public class UserSessionRepository : IUserSessionRepository
@@ -96,6 +97,18 @@ namespace account_service.repositories
 			{
 				userSession.EndTime = DateTime.UtcNow.AddMinutes(15);
 			}
+		}
+
+		public async Task UpdateSession(Guid sessionId, string refToken)
+		{
+			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId && e.Status == UserSessionStatus.Active).FirstOrDefaultAsync();
+			if (userSession != null)
+			{
+				userSession.EndTime = DateTime.UtcNow.AddMinutes(15);
+				userSession.Reftoken = refToken;
+			}
+
+			await _context.SaveChangesAsync();	
 		}
 
 		public async Task<string> GetUserRefToken(RefreshTokenRequest request)
