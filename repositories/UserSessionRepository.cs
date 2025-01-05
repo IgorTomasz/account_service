@@ -100,7 +100,7 @@ namespace account_service.repositories
 
 		public async Task<string> GetUserRefToken(RefreshTokenRequest request)
 		{
-			var userSession = await _context.UserSessions.Where(e => e.SessionId == request.SessionId && e.UserId==request.UserId).FirstOrDefaultAsync();
+			var userSession = await _context.UserSessions.Where(e => e.SessionId == request.SessionId && e.UserId==request.UserId && e.Status==UserSessionStatus.Active).FirstOrDefaultAsync();
 
 			if (userSession != null)
 			{
