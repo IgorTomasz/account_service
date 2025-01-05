@@ -50,7 +50,8 @@ namespace account_service.Controllers
 					DateOfBirth = user.DateOfBirth,
 					IsActive = user.IsActive,
 					CreatedAt = user.CreatedAt,
-					LastLogin = user.LastLogin
+					LastLogin = user.LastLogin,
+					UserType = user.UserType,
 				}
 			});
 		}
