@@ -82,7 +82,7 @@ namespace account_service.repositories
 
 		public async Task Logout(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId).FirstOrDefaultAsync();
+			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId && e.Status==UserSessionStatus.Active).FirstOrDefaultAsync();
 
 			userSession.Status = UserSessionStatus.LoggedOut;
 			userSession.EndTime = DateTime.UtcNow.AddHours(1);
@@ -91,7 +91,7 @@ namespace account_service.repositories
 
 		public async Task UpdateSession(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId).FirstOrDefaultAsync();
+			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId && e.Status==UserSessionStatus.Active).FirstOrDefaultAsync();
 			if (userSession != null)
 			{
 				userSession.EndTime = DateTime.UtcNow.AddMinutes(15);
@@ -112,7 +112,7 @@ namespace account_service.repositories
 
 		public async Task<Guid> GetUserIdFromSessionId(Guid sessionId)
 		{
-			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId).FirstOrDefaultAsync();
+			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId && e.Status==UserSessionStatus.Active).FirstOrDefaultAsync();
 
 			if (userSession != null)
 			{
