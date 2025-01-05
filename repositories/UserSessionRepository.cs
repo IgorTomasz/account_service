@@ -65,7 +65,7 @@ namespace account_service.repositories
 				Status = UserSessionStatus.Active,
 				Reftoken = createSessionRequest.RefToken,
 				StartTime = DateTime.UtcNow.AddHours(1),
-				EndTime = DateTime.UtcNow.AddMinutes(15).AddHours(1),
+				EndTime = DateTime.UtcNow.AddHours(1).AddMinutes(15),
 				DeviceInfo = createSessionRequest.DeviceInfo,
 				IpAddress = createSessionRequest.IdAddress,
 				User = user
@@ -95,7 +95,7 @@ namespace account_service.repositories
 			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId && e.Status==UserSessionStatus.Active).FirstOrDefaultAsync();
 			if (userSession != null)
 			{
-				userSession.EndTime = DateTime.UtcNow.AddMinutes(15);
+				userSession.EndTime = DateTime.UtcNow.AddHours(1).AddMinutes(15);
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace account_service.repositories
 			var userSession = await _context.UserSessions.Where(e => e.SessionId == sessionId && e.Status == UserSessionStatus.Active).FirstOrDefaultAsync();
 			if (userSession != null)
 			{
-				userSession.EndTime = DateTime.UtcNow.AddMinutes(15);
+				userSession.EndTime = DateTime.UtcNow.AddHours(1).AddMinutes(15);
 				userSession.Reftoken = refToken;
 			}
 

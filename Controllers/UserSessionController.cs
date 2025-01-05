@@ -2,6 +2,7 @@
 using account_service.models.UserDTOs;
 using account_service.models.UserSessionDTOs;
 using account_service.services;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace account_service.Controllers
@@ -73,6 +74,7 @@ namespace account_service.Controllers
 		[HttpGet("profile/userInfo/{sessionId}")]
 		public async Task<IActionResult> GetUserIdFromSession(Guid sessionId)
 		{
+			await _userSessionService.UpdateSession(sessionId);
 			Guid userId = await _userSessionService.GetUserIdFromSessionId(sessionId);
 
 			if (userId != Guid.Empty)
