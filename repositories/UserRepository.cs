@@ -15,7 +15,6 @@ namespace account_service.repositories
 		public Task<bool> CheckPasswordMatchUser(Guid userId, string password);
 		public Task<bool> CheckIfAlreadyExistsByUsernameAndEmail(string username, string email);
 		public Task<User> GetUserProfile(Guid userId);
-		public Guid ParseGuid(string guidString);
 		public Task<bool> CheckIfUserExists(Guid userId);
 		public Task<bool> ChangePassword(ChangePasswordRequest passwordRequest);
 		public Task DeleteUser(Guid userId);
@@ -133,20 +132,5 @@ namespace account_service.repositories
 			await _context.SaveChangesAsync();
 		}
 
-		public Guid ParseGuid(string guidString)
-		{
-			Guid userId = Guid.Empty;
-
-			try
-			{
-				userId = Guid.Parse(guidString);
-			}
-			catch (FormatException e)
-			{
-
-			}
-
-			return userId;
-		}
 	}
 }

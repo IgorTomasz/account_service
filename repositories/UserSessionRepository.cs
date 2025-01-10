@@ -13,7 +13,6 @@ namespace account_service.repositories
 		public Task<Guid> GetUserIdFromSessionId(Guid sessionId);
 		public Task UpdateSession(Guid sessionId);
 		public Task<UserSession> GetSession(Guid sessionId);
-		public Guid ParseGuid(string guidString);
 		public Task<List<UserSession>> GetAllSessions();
 		public Task Logout(Guid sessionId);
 		public Task ExpireUserOldSessions(Guid userId);
@@ -140,20 +139,5 @@ namespace account_service.repositories
 			return await _context.UserSessions.ToListAsync();
 		}
 
-		public Guid ParseGuid(string guidString)
-		{
-			Guid sessionId = Guid.Empty;
-
-			try
-			{
-				sessionId = Guid.Parse(guidString);
-			}
-			catch (FormatException e)
-			{
-
-			}
-
-			return sessionId;
-		}
 	}
 }
